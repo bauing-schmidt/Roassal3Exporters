@@ -14,12 +14,12 @@ BaselineOfRoassal3Exporters >> baseline: spec [
 		for: #common
 		do: [
 			"our dependencies"
-			"https://github.com/ObjectProfile/Roassal3Exporters"
+			"https://github.com/bauing-schmidt/Roassal3Exporters"
 			spec
 				baseline: 'Roassal3' 
 				with: [ spec 
 					loads: 'Full';
-					repository: 'github://ObjectProfile/Roassal3' ].
+					repository: 'github://bauing-schmidt/Roassal3:production10' ].
 			spec 
 				baseline: 'OSSubprocess'
 				with: [ spec repository: 'github://pharo-contributions/OSSubprocess/repository' ].

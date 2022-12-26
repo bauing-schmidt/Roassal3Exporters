@@ -19,7 +19,7 @@ BaselineOfRoassal3Exporters >> baseline: spec [
 				baseline: 'Roassal3' 
 				with: [ spec 
 					loads: 'Full';
-					repository: 'github://bauing-schmidt/Roassal3:production10' ].
+					repository: 'github://bauing-schmidt/Roassal3:production11' ].
 			spec 
 				baseline: 'OSSubprocess'
 				with: [ spec repository: 'github://pharo-contributions/OSSubprocess/repository' ].

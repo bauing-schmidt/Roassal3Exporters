@@ -16,6 +16,11 @@ Class {
 	#category : #'Roassal3-Exporters-Core'
 }
 
+{ #category : #accessing }
+RSSVGExporter class >> extension [
+	^ 'svg'
+]
+
 { #category : #public }
 RSSVGExporter >> disableFontDefs [
 	shouldHaveFontDefs := false
@@ -33,8 +38,8 @@ RSSVGExporter >> enableFontDefs [
 
 { #category : #public }
 RSSVGExporter >> exportToFile: file [
-	file writeStreamDo: [ :aStream | self exportToStream: aStream ].
-	
+	self removeIfNecessary: file.
+	file writeStreamDo: [ :aStream | self exportToStream: aStream ]
 ]
 
 { #category : #public }
@@ -54,11 +59,6 @@ RSSVGExporter >> exportToStream: aStream [
 RSSVGExporter >> exporterFontStrategy: strategy [
 	self assert: strategy class superclass = RSExporterFontStrategy.
 	exporterFontStrategy := strategy 
-]
-
-{ #category : #accessing }
-RSSVGExporter >> extension [
-	^ 'svg'
 ]
 
 { #category : #initialization }
@@ -247,7 +247,7 @@ RSSVGExporter >> visitCanvas: aRSCanvas [
 	pathTransform
 		translateBy: (extent / 2) asFloatPoint;
 		scaleBy: aRSCanvas camera scale asFloat;
-		translateBy: aRSCanvas camera position negated asFloatPoint.
+		translateBy: (aRSCanvas camera position / aRSCanvas camera scale) asFloatPoint.
 	self 
 		write: '<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="'.

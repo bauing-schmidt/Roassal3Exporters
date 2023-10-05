@@ -21,9 +21,20 @@ Class {
 	#category : #'Roassal3-Exporters-Video'
 }
 
+{ #category : #accessing }
+RSVideoExporter class >> extension [
+	^ 'mp4'
+]
+
 { #category : #public }
 RSVideoExporter class >> ffmpegPath [
 	^ ffmpegPath ifNil: [ ffmpegPath := self resolveffmpegPath ].
+]
+
+{ #category : #accessing }
+RSVideoExporter class >> inspectCommand [
+	<script>
+	^ self new fullCommand inspect
 ]
 
 { #category : #public }
@@ -70,6 +81,7 @@ RSVideoExporter >> exportFrame: index [
 	| name |
 	name := self nameFor: index.
 	canvas pngExporter
+		noDoubleDraw;
 		fileName: (tempFiles / name) pathString ;
 		export.
 	timer addTime: step milliSeconds.
@@ -94,8 +106,15 @@ RSVideoExporter >> exportToDirectory: directory [
 
 { #category : #public }
 RSVideoExporter >> exportToFile: file [
+	| firstTime |
+	'Video exporting Started: ' trace.
+	firstTime := Time now traceCr.
 	self exportToDirectory: (file parent / file path base) createDirectory.
 	self exportWithffmpeg: file.
+	'Ended: ' trace.
+	Time now traceCr.
+	'Duration: ' trace.
+	(Time now asDuration - firstTime asDuration) traceCr
 ]
 
 { #category : #private }
@@ -141,6 +160,24 @@ RSVideoExporter >> fps: aNumber [
 RSVideoExporter >> fpsOutPut: aNumber [
 	aNumber < 1 ifTrue: [ self error: 'invalid fps' ].
 	fpsOutput := aNumber.
+]
+
+{ #category : #accessing }
+RSVideoExporter >> framesDirectory: aFile [
+	tempFiles := aFile.
+	self keepTempDir
+]
+
+{ #category : #accessing }
+RSVideoExporter >> fullCommand [
+	^ String streamContents: [ :stream |
+		stream << 'ffmpeg '.
+		self processArguments do: [ :each |
+			(each includes: $*)
+				ifTrue: [ stream << '"' << each << '"' ]
+				ifFalse: [ stream << each ].
+			] separatedBy: [ stream space ].
+		 ]
 ]
 
 { #category : #initialization }
@@ -220,6 +257,7 @@ RSVideoExporter >> processArguments [
 		add: '-i';
 		add: '*.png';
 		yourself.
+	
 	hasTransparency ifTrue: [ 
 		"-vcodec prores_ks -pix_fmt yuva444p10le -profile:v 4444"
 		args
@@ -230,6 +268,7 @@ RSVideoExporter >> processArguments [
 			add: '-profile:v';
 			add: '4444' ]
 	ifFalse: [ 
+		"-framerate 30 -pattern_type glob -i *.png -c:v libx264 -pix_fmt yuv420p".
 		args
 			add: '-c:v';
 			add: 'libx264';

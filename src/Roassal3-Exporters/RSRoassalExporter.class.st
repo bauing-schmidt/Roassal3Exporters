@@ -14,6 +14,11 @@ Class {
 }
 
 { #category : #accessing }
+RSRoassalExporter class >> extension [
+	^ self subclassResponsibility
+]
+
+{ #category : #accessing }
 RSRoassalExporter >> baseName [
 	| file ext |
 	file := self fileName.
@@ -73,7 +78,7 @@ RSRoassalExporter >> exportToFile: file [
 
 { #category : #accessing }
 RSRoassalExporter >> extension [
-	^ self subclassResponsibility
+	^ self class extension
 ]
 
 { #category : #accessing }
@@ -89,7 +94,7 @@ RSRoassalExporter >> fileName: aString [
 { #category : #initialization }
 RSRoassalExporter >> initialize [
 	super initialize.
-	self withFixedShapes.
+	self withoutFixedShapes.
 	self zoomToCurrentCamera.
 ]
 
@@ -99,13 +104,36 @@ RSRoassalExporter >> morph [
 ]
 
 { #category : #configuration }
+RSRoassalExporter >> noDoubleDraw [
+	self cameraSetter noDoubleDraw
+]
+
+{ #category : #configuration }
 RSRoassalExporter >> noFixedShapes [
-	showFixedShapes := false
+
+	self deprecated: 'Use withoutFixedShapes instead'
+		transformWith: '`@receiver noFixedShapes' -> ' `@receiver withoutFixedShapes'.
+	self withoutFixedShapes
+]
+
+{ #category : #removing }
+RSRoassalExporter >> removeIfNecessary: aFileName [
+	aFileName exists ifTrue: [ aFileName delete ]
+]
+
+{ #category : #configuration }
+RSRoassalExporter >> useDoubleDraw [
+	self cameraSetter useDoubleDraw
 ]
 
 { #category : #configuration }
 RSRoassalExporter >> withFixedShapes [
 	showFixedShapes := true
+]
+
+{ #category : #configuration }
+RSRoassalExporter >> withoutFixedShapes [
+	showFixedShapes := false
 ]
 
 { #category : #configuration }

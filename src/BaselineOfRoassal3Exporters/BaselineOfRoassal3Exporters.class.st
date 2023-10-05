@@ -12,31 +12,38 @@ BaselineOfRoassal3Exporters >> baseline: spec [
 	<baseline>
 	spec
 		for: #common
-		do: [
+		do: [ | hasCanvas |
 			"our dependencies"
-			"https://github.com/bauing-schmidt/Roassal3Exporters"
+			"https://github.com/ObjectProfile/Roassal3Exporters"
+			hasCanvas := Smalltalk globals includesKey: #RSCanvas.
+			hasCanvas ifFalse: [
+				spec
+				baseline: 'Roassal3'
+				with: [ spec repository: 'github://bauing-schmidt/Roassal3:production12' ].
+			].
+
 			spec
-				baseline: 'Roassal3' 
-				with: [ spec 
-					loads: 'Full';
-					repository: 'github://bauing-schmidt/Roassal3:production12' ].
-			spec 
 				baseline: 'OSSubprocess'
 				with: [ spec repository: 'github://pharo-contributions/OSSubprocess/repository' ].
 			spec
 				baseline: 'Units'
 				with: [ spec repository: 'github://zweidenker/Units' ].
-			
+
 			"The packages to use, but not load"
+
 			spec
-				package: #'Roassal3-Exporters' with: [ spec requires: self exporterDependencies ];
+				package: #'Roassal3-Exporters' with: [
+					spec requires: (hasCanvas
+						ifTrue: [ #('Units') ]
+						ifFalse: [ #('Units' 'Roassal3') ])
+					 ];
 				package: #'Roassal3-Exporters-Examples';
 				package: #'Roassal3-Exporters-Tests';
 				package: #'Roassal3-Exporters-Video' with: [spec requires: #('OSSubprocess') ];
 				package: #'Roassal3-Exporters-AFrame';
 				package: 'Roassal3-Exporters-AFrame-Examples';
 				package: #'Roassal3-Exporters-AFrame-Tests'.
-				
+
 			spec
 				group: 'Core' with: #(
 					'Roassal3-Exporters'
@@ -51,15 +58,5 @@ BaselineOfRoassal3Exporters >> baseline: spec [
 					'Roassal3-Exporters-AFrame-Tests'
 					'Roassal3-Exporters-AFrame-Examples'
 				);
-				group: 'default' with: #('Core') ].
-
-		
-	
-
-
-
-
-
-
-
+				group: 'default' with: #('Core') ]
 ]
